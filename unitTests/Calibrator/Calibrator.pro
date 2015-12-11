@@ -32,6 +32,7 @@ LIBS += -lopencv_xfeatures2d
 LIBS += -lopencv_imgproc
 LIBS += -lopencv_imgcodecs
 
+
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../bruceSFM/build/release/ -lbruceSFM
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bruceSFM/build/debug/ -lbruceSFM
 else:unix:!macx: LIBS += -L$$PWD/../../bruceSFM/build/ -lbruceSFM
