@@ -9,14 +9,13 @@ void IOProcessorTest::loadImagesTest1   ()
 {
     IOProcessor io{};
     QVector<Mat> images;
-    qDebug()<<"Jestem w: "<<QDir::current().absolutePath();
     io.loadImages("../../extraData/testImageSet", images);
 
     bool isCorrectLoaded {};
 
     if(images.length() == 2)                            //--powinny zostać załadowane dwa zdjęcia
         if(images.first().size == images.last().size)   //--o tym samym rozmiarze
-            if(images.first().cols == 2560)             //--tj. 2560px
+            if(images.first().cols == 2561)             //--tj. 2560px
                 if(images.first().rows == 1600)         //--na 1600px
                     isCorrectLoaded = true;
 
