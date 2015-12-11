@@ -11,11 +11,13 @@ CONFIG += c++11
 DEFINES += BRUCESFM_LIBRARY
 
 SOURCES += sfm.cpp \
-    calibrator.cpp
+    calibrator.cpp \
+    ioprocessor.cpp
 
 HEADERS += sfm.h\
         brucesfm_global.h \
-    calibrator.h
+    calibrator.h \
+    ioprocessor.h
 
 unix {
     target.path = /usr/lib
