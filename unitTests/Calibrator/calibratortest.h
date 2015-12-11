@@ -22,11 +22,8 @@ private:
     bool isMatEqual         (Mat &mat1, Mat &mat2);
     void initPatternKandD   (Mat &k, Mat &d);
 
-//    const QString calibParamFilePath {QDir::currentPath()+"/../calibParam.yml"};
-//    const QString calibImgSetDirPath {QDir::currentPath()+"/../calibSet"};
-
-    const QString calibParamFilePath {"/home/adam/Pulpit/bruceSFM/bruceSFMUnitTest/Calibrator/calibParam.yml"};
-    const QString calibImgSetDirPath {"/home/adam/Pulpit/bruceSFM/bruceSFMUnitTest/Calibrator/calibSet"};
+    const QString calibParamFilePath {QDir::currentPath()+"/../../calibParam.yml"};
+    const QString calibImgSetDirPath {QDir::currentPath()+"/../../calibSet"};
 
 };
 

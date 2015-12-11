@@ -20,18 +20,6 @@ DEFINES += SRCDIR=\\\"$$PWD/\\\"
 HEADERS += \
     calibratortest.h
 
-#win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../build/release/ -lbruceSFM
-#else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../build/debug/ -lbruceSFM
-#else:unix:!macx: LIBS += -L$$PWD/../../build/ -lbruceSFM
-
-#INCLUDEPATH += $$PWD/../../bruceSFM
-#DEPENDPATH += $$PWD/../../bruceSFM
-
-INCLUDEPATH += /home/adam/Pulpit/bruceSFM/bruceSFM/
-LIBS += -L/home/adam/Pulpit/bruceSFM/build
-LIBS += -lbruceSFM
-
-LIBS += -L/home/adam/Pulpit/bruceSFM/build -lbruceSFM
 
 INCLUDEPATH += /usr/local/include
 LIBS += -L/usr/local/lib
@@ -43,3 +31,10 @@ LIBS += -lopencv_features2d
 LIBS += -lopencv_xfeatures2d
 LIBS += -lopencv_imgproc
 LIBS += -lopencv_imgcodecs
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../bruceSFM/build/release/ -lbruceSFM
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bruceSFM/build/debug/ -lbruceSFM
+else:unix:!macx: LIBS += -L$$PWD/../../bruceSFM/build/ -lbruceSFM
+
+INCLUDEPATH += $$PWD/../../bruceSFM
+DEPENDPATH += $$PWD/../../bruceSFM
