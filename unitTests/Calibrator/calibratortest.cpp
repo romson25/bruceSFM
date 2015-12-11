@@ -24,7 +24,6 @@ void CalibratorTest::calibrateTest2 ()
 //--załaduj zestaw zdjęć do wektora
     QVector<Mat> images;
     QDir dir(calibImgSetDirPath);
-    qDebug()<<"jestem w: "<<dir.absolutePath();
     QStringList imgNameList(dir.entryList(QDir::Files, QDir::Time));
 
     foreach (QString imageName, imgNameList)
@@ -32,7 +31,6 @@ void CalibratorTest::calibrateTest2 ()
         QString absoluteFilePath(dir.absolutePath()+"/"+imageName);
         Mat img = imread(absoluteFilePath.toStdString(), IMREAD_GRAYSCALE);
         images.push_back(img);
-        qDebug()<<"image.name: "<<absoluteFilePath;
     }
 
 //--oblicz calibMatrix oraz distCoeff
