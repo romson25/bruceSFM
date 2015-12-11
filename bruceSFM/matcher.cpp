@@ -43,7 +43,8 @@ int Matcher::ratioTest        (vector<vector<DMatch> > &matches)
   return removed;
 }
 
-void Matcher::symmetryTest    (const vector<vector<DMatch> >& matches1, const vector<vector<DMatch> >& matches2,
+void Matcher::symmetryTest    (const vector<vector<DMatch> >& matches1,
+                               const vector<vector<DMatch> >& matches2,
                                vector<DMatch>& symMatches)
 {
 // Insert symmetrical matches in symMatches vector
@@ -81,31 +82,18 @@ void Matcher::symmetryTest    (const vector<vector<DMatch> >& matches1, const ve
 
 }
 
-void Matcher::robustMatch     (const Mat& img, vector<DMatch>& matches, vector<KeyPoint>& keypointsNextImg,
-                               const Mat& descriptorsPrevImg, Mat& descriptorsNextImg)
+void Matcher::robustMatch     (vector<DMatch>& matches,
+                               const Mat& img1descriptors,
+                               const Mat& img2descriptors)
 {
-  // 1a. Detection of the ORB features
-  this->computeKeyPoints(img, keypointsNextImg);
-
-  // 1b. Extraction of the ORB descriptors
-  this->computeDescriptors(img, keypointsNextImg, descriptorsNextImg);
-
-  // 2. Match the two image descriptors
   vector<vector<DMatch> > matches12, matches21;
 
-  // 2a. From image 1 to image 2
-  matcher->knnMatch(descriptorsNextImg, descriptorsPrevImg, matches12, 2); // return 2 nearest neighbours
+  matcher->knnMatch(img2descriptors, img1descriptors, matches12, 2); // return 2 nearest neighbours
+  matcher->knnMatch(img1descriptors, img2descriptors, matches21, 2); // return 2 nearest neighbours
 
-  // 2b. From image 2 to image 1
-  matcher->knnMatch(descriptorsPrevImg, descriptorsNextImg, matches21, 2); // return 2 nearest neighbours
-
-  // 3. Remove matches for which NN ratio is > than threshold
-  // clean image 1 -> image 2 matches
   ratioTest(matches12);
-  // clean image 2 -> image 1 matches
   ratioTest(matches21);
 
-  // 4. Remove non-symmetrical matches
   symmetryTest(matches12, matches21, matches);
 }
 
