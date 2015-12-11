@@ -33,6 +33,7 @@ void CalibratorTest::calibrateTest2 ()
         QFile file(absoluteFilePath);
         Mat img = imread(absoluteFilePath.toStdString(), IMREAD_GRAYSCALE);
         images.push_back(img);
+        qDebug()<<"image.path: "<<absoluteFilePath;
     }
 
 //--oblicz calibMatrix oraz distCoeff
