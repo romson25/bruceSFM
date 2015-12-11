@@ -12,12 +12,14 @@ DEFINES += BRUCESFM_LIBRARY
 
 SOURCES += sfm.cpp \
     calibrator.cpp \
-    ioprocessor.cpp
+    ioprocessor.cpp \
+    matcher.cpp
 
 HEADERS += sfm.h\
         brucesfm_global.h \
     calibrator.h \
-    ioprocessor.h
+    ioprocessor.h \
+    matcher.h
 
 unix {
     target.path = /usr/lib

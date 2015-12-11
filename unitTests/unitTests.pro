@@ -4,4 +4,5 @@ CONFIG += ordered
 
 SUBDIRS = \
     IOProcessor\
-Calibrator
+Calibrator \
+    Matcher
