@@ -9,6 +9,7 @@ void IOProcessorTest::loadImagesTest1   ()
 {
     IOProcessor io{};
     QVector<Mat> images;
+    qDebug()<<"Jestem w: "<<QDir::absolutePath();
     io.loadImages("../../extraData/testImageSet", images);
 
     bool isCorrectLoaded {};
