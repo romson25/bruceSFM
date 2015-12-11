@@ -1,0 +1,12 @@
+#ifndef BRUCESFM_GLOBAL_H
+#define BRUCESFM_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(BRUCESFM_LIBRARY)
+#  define BRUCESFMSHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define BRUCESFMSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // BRUCESFM_GLOBAL_H
