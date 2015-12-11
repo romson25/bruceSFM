@@ -24,6 +24,7 @@ void CalibratorTest::calibrateTest2 ()
 //--załaduj zestaw zdjęć do wektora
     QVector<Mat> images;
     QDir dir(calibImgSetDirPath);
+    qDebug()<<"Jestem w: "<<dir.absolutePath();
     QStringList imgNameList(dir.entryList(QDir::Files, QDir::Time));
 
     foreach (QString imageName, imgNameList)
