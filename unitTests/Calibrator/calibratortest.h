@@ -2,6 +2,7 @@
 #define CALIBRATORTEST_H
 
 #include <QtTest>
+#include <QDir>
 #include "calibrator.h"
 
 class CalibratorTest : public QObject
