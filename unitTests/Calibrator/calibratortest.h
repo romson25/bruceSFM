@@ -3,6 +3,7 @@
 
 #include <QtTest>
 #include <QDir>
+#include <commons.h>
 #include "calibrator.h"
 
 class CalibratorTest : public QObject
@@ -12,20 +13,16 @@ public:
     CalibratorTest();
 
 private Q_SLOTS:
-    void calibrateTest1();
-    void calibrateTest2();
-    void loadTest1();
-    void loadTest2();
-    void getTest();
-    void saveTest();
+    void calibrateTests ();
+    void loadTests      ();
+    void getTest        ();
+    void saveTest       ();
 
 private:
-    bool isMatEqual         (Mat &mat1, Mat &mat2);
+    bool calibrateTest  (QString calibSetDirPath, Size chessboardSize);
+    bool loadTest       (QString calibFilePath);
+
     void initPatternKandD   (Mat &k, Mat &d);
-
-    const QString calibParamFilePath {"../../Calibrator/calibParam.yml"};
-    const QString calibImgSetDirPath {"../../Calibrator/calibSet"};
-
 };
 
 #endif // CALIBRATORTEST_H

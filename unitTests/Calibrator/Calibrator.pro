@@ -38,3 +38,7 @@ LIBS += -lopencv_xfeatures2d
 LIBS += -lopencv_imgproc
 LIBS += -lopencv_imgcodecs
 
+DEPENDPATH += $$PWD/../commons
+INCLUDEPATH += $$PWD/../commons
+SOURCES += $$PWD/../commons/commons.cpp
+HEADERS += $$PWD/../commons/commons.h

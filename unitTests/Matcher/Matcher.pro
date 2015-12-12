@@ -12,9 +12,12 @@ CONFIG   += c++11
 
 TEMPLATE = app
 
-
 SOURCES += \
     matchertest.cpp
+
+HEADERS += \
+    matchertest.h
+
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 
@@ -36,5 +39,7 @@ LIBS += -lopencv_xfeatures2d
 LIBS += -lopencv_imgproc
 LIBS += -lopencv_imgcodecs
 
-HEADERS += \
-    matchertest.h
+DEPENDPATH += $$PWD/../commons
+INCLUDEPATH += $$PWD/../commons
+SOURCES += $$PWD/../commons/commons.cpp
+HEADERS += $$PWD/../commons/commons.h

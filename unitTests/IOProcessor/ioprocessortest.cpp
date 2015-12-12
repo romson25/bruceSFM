@@ -3,29 +3,34 @@
 IOProcessorTest::IOProcessorTest()
 {}
 
-void IOProcessorTest::loadImagesTest1   ()
+void IOProcessorTest::loadImagesTests   ()
 {
-    IOProcessor io{};
-    QVector<Mat> images;
-    io.loadImages("../../extraData/testImageSet", images);
+    const QString validDirPath   = "../../extraData/testImageSet";
+    const QString invalidDirPath = "../../badPath/testImageSet";
 
-    bool isCorrectLoaded {};
-
-    if(images.length() == 2)                            //--powinny zostać załadowane dwa zdjęcia
-        if(images.first().size == images.last().size)   //--o tym samym rozmiarze
-            if(images.first().cols == 2560)             //--tj. 2560px
-                if(images.first().rows == 1600)         //--na 1600px
-                    isCorrectLoaded = true;
-
-    QVERIFY(isCorrectLoaded);
+    QVERIFY(  loadImagesTest(validDirPath)   );
+    QVERIFY( !loadImagesTest(invalidDirPath) );
 }
-void IOProcessorTest::loadImagesTest2   ()
-{
-    IOProcessor io{};
-    QVector<Mat> images;
-    io.loadImages("../../extraData/badPath", images);
 
-    QVERIFY(images.length() == 0);
+bool IOProcessorTest::loadImagesTest    (QString dirPath)
+{
+//--wczytaj zdjęcia z folderu do wektora images
+    QVector<Mat> images;
+    IOProcessor io;
+    io.loadImages(dirPath, images);
+
+//--jeżeli wektor jest pusty zwróć false
+    if(images.empty())
+        return false;
+
+//--sprawdź czy wczytane zdjęcia spełniają wszystkie kryteria
+    bool validImagesLength  { images.length() == 2 };       //--powinny zostać załadowane dwa zdjęcia
+    bool equalSize          { images.first().size == images.last().size };  //--o tym samym rozmiarze
+    bool validImagesHight   { images.first().rows == 1600 };    //--tj. 2560px
+    bool validImagesWidth   { images.first().cols == 2560 };    //--na 1600px
+    bool correctLoaded      { validImagesLength && equalSize && validImagesHight && validImagesWidth };
+
+    return correctLoaded;
 }
 
 QTEST_APPLESS_MAIN(IOProcessorTest)

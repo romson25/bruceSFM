@@ -5,183 +5,131 @@ MatcherTest::MatcherTest()
     //TODO: testy powinny być niezależne od siebie, tylko ciekawe jak w tym przypadku to zrobić ?!
 }
 
-void MatcherTest::computeKeyPointsTest1     ()
+void MatcherTest::computeKeyPointsTests     ()
 {
-    Matcher matcher {};
+    const QString validImage       = "../../extraData/testImageSet/pen1.jpg";
+    const QString invalidImage     = "../../extraData/testImageSet/pen2.jpg";
+    const QString invalidPathImage = "../../extraData/badPath/pen1.jpg";
 
-    Mat img = imread("../../extraData/testImageSet/pen1.jpg", IMREAD_GRAYSCALE);
-    vector<KeyPoint> keypoints {};
-
-    matcher.computeKeyPoints(img, keypoints);
-
-    KeyPoint firstCorrect   = KeyPoint(1442, 276, 31);
-    KeyPoint lastCorrect    = KeyPoint(1057.04, 146.91, 111.079);
-
-    bool isCorrectKeypointsNumber   { keypoints.size() == 500 };
-    bool isEqualsFirstKeypoints     { isKeypointsEqual(keypoints.front(), firstCorrect) };
-    bool isEqualsLastKeypoints      { isKeypointsEqual(keypoints.back(), lastCorrect) };
-
-    QVERIFY( (isCorrectKeypointsNumber && isEqualsFirstKeypoints && isEqualsLastKeypoints) );
+    QVERIFY(  computeKeyPointsTest( validImage )        );
+    QVERIFY( !computeKeyPointsTest( invalidImage )      );
+    QVERIFY( !computeKeyPointsTest( invalidPathImage )  );
 }
-void MatcherTest::computeKeyPointsTest2     ()
+void MatcherTest::computeDescriptorsTests   ()
 {
-    Mat img = imread("../../extraData/testImageSet/pen2.png", IMREAD_GRAYSCALE);
-    vector<KeyPoint> keypoints;
-    if(keypoints.empty())
-        return;
+    const QString validImage       = "../../extraData/testImageSet/pen1.jpg";
+    const QString invalidImage     = "../../extraData/testImageSet/pen2.jpg";
+    const QString invalidPathImage = "../../extraData/badPath/pen1.jpg";
 
+    QVERIFY(  computeDescriptorsTest( validImage )        );
+    QVERIFY( !computeDescriptorsTest( invalidImage )      );
+    QVERIFY( !computeDescriptorsTest( invalidPathImage )  );
+}
+void MatcherTest::robustMatchTests          ()
+{
+    //--teoretycznie test 12 i 21 powinnien dać taki sam wynik, matchesy powinny być takie same
+    //--i prawdopodobnie tak jest jednak są ułożone w innnej kolejności w wektorze i pliku
+    //--a algorytm porównawczy nie uwzględnia dlatego uzna że 12 i 21 to zupełnie inne matchesy
+
+    const QString validImage1       = "../../extraData/testImageSet/pen1.jpg";
+    const QString validImage2       = "../../extraData/testImageSet/pen2.jpg";
+    const QString invalidImage      = "../../extraData/badPath/toNiePng.png";
+    const QString invalidPathImage  = "../../extraData/badPath/pen1.jpg";
+
+    QVERIFY(  robustMatchTest( validImage1, validImage2 ) );
+//    QVERIFY(  robustMatchTest( validImage2, validImage1 ) );
+
+    QVERIFY( !robustMatchTest( validImage1, invalidImage ) );
+    QVERIFY( !robustMatchTest( invalidImage, validImage1 ) );
+    QVERIFY( !robustMatchTest( validImage2, invalidImage ) );
+    QVERIFY( !robustMatchTest( invalidImage, validImage2 ) );
+
+    QVERIFY( !robustMatchTest( invalidImage, invalidPathImage ) );
+    QVERIFY( !robustMatchTest( invalidPathImage, validImage2  ) );
+
+    QVERIFY( !robustMatchTest( invalidPathImage, validImage1 ) );
+    QVERIFY( !robustMatchTest( invalidPathImage, validImage2 ) );
+}
+
+bool MatcherTest::computeKeyPointsTest  (QString imageAbsolutePath)
+{
+    Mat img = imread(imageAbsolutePath.toStdString(), IMREAD_GRAYSCALE);
+
+//--odrzuć już na początku wszystkie nie poprawnie załadowane zdjęcia
+    if(img.empty())
+        return false;
+
+//--oblicz keypointy
+    vector<KeyPoint> keypoints;
     Matcher matcher;
     matcher.computeKeyPoints(img, keypoints);
 
-    KeyPoint firstCorrect   = KeyPoint(1442, 276, 31);
-    KeyPoint lastCorrect    = KeyPoint(1057.04, 146.91, 111.079);
+//--zainicjuj poprawny zestaw keypointów sporządzony dla ../../extraData/testImageSet/pen1.jpg
+    KeyPoint firstCorrectKeypoint   = KeyPoint(1442, 276, 31);
+    KeyPoint lastCorrectKeypoint    = KeyPoint(1057.04, 146.91, 111.079);
+    uint correctKeypointsNumber     = 500;
 
-    bool isCorrectKeypointsNumber   {keypoints.size() == 500};
-    bool isEqualsFirstKeypoints     { isKeypointsEqual(keypoints.front(), firstCorrect) };
-    bool isEqualsLastKeypoints      { isKeypointsEqual(keypoints.back(), lastCorrect) };
+//--porównaj obliczone keypointy z przygotowanym zestawem
+    bool equalKeypointsNumber   { keypoints.size() == correctKeypointsNumber };
+    bool equalFirstKeypoints    { Commons::isKeypointsEqual(keypoints.front(), firstCorrectKeypoint) };
+    bool equalLastKeypoints     { Commons::isKeypointsEqual(keypoints.back(), lastCorrectKeypoint) };
 
-    QVERIFY(!isCorrectKeypointsNumber || !isEqualsFirstKeypoints || !isEqualsLastKeypoints);
+    return equalKeypointsNumber && equalFirstKeypoints && equalLastKeypoints;
 }
-void MatcherTest::computeDescriptorsTest1   ()
+bool MatcherTest::computeDescriptorsTest(QString imageAbsolutePath)
 {
+    Mat img = imread(imageAbsolutePath.toStdString(), IMREAD_GRAYSCALE);
+
+//--odrzuć już na początku wszystkie nie poprawnie załadowane zdjęcia
+    if(img.empty())
+        return false;
+
+//--oblicz keypointy i deskryptory
     vector<KeyPoint> keypoints;
     Mat descriptors;
-    Mat img = imread("../../extraData/testImageSet/pen1.jpg", IMREAD_GRAYSCALE);
-
     Matcher matcher;
     matcher.computeKeyPoints(img, keypoints);
     matcher.computeDescriptors(img, keypoints, descriptors);
 
-    FileStorage fsr("../../extraData/MatcherSetCorrectDescriptors.yml", FileStorage::READ);
+//--wczytaj poprawny zestaw deskryptorów sporządzony dla ../../extraData/testImageSet/pen1.jpg
+    FileStorage fs("../../extraData/MatcherSetCorrectDescriptors.yml", FileStorage::READ);
     Mat correctDescriptors;
-    fsr["descriptors"] >> correctDescriptors;
-    fsr.release();
+    fs["descriptors"] >> correctDescriptors;
+    fs.release();
 
-    cout<<"^^^^^^^^^^correct^^^^^^^^^^^\n"<<correctDescriptors<<endl;
-    cout<<"\n^^^^^^^^^^computed^^^^^^^^^^^\n"<<descriptors<<endl;
-    QVERIFY( isMatEqual(descriptors, correctDescriptors) );
+//--porównaj obliczone deskryptory z przygotowanym zestawem
+    return Commons::isMatEqual(descriptors, correctDescriptors);
 }
-void MatcherTest::computeDescriptorsTest2   ()
+bool MatcherTest::robustMatchTest       (QString image1AbsolutePath, QString image2AbsolutePath)
 {
-    //--załadowane zdjęcie nie pasuje do przygotowanego zestawu
-    //--dlatego wynik isMatEqual powinien być negatywny
+    Mat img1 = imread(image1AbsolutePath.toStdString(), IMREAD_GRAYSCALE);
+    Mat img2 = imread(image2AbsolutePath.toStdString(), IMREAD_GRAYSCALE);
 
-    //--przygotuj zmienne
-    vector<KeyPoint> keypoints;
-    Mat descriptors;
-    Mat img = imread("../../extraData/testImageSet/pen2.jpg", IMREAD_GRAYSCALE);
+//--odrzuć już na początku wszystkie nie poprawnie załadowane zdjęcia
+    if( img1.empty() || img2.empty())
+        return false;
 
-    //--oblicz keypointy i descriptory
-    Matcher matcher;
-    matcher.computeKeyPoints(img, keypoints);
-    matcher.computeDescriptors(img, keypoints, descriptors);
-
-    //--wczytaj poprawny zestaw danych
-    FileStorage fsr("../../extraData/MatcherSetCorrectDescriptors.yml", FileStorage::READ);
-    Mat correctDescriptors;
-    fsr["descriptors"] >> correctDescriptors;
-    fsr.release();
-
-    //--porównaj otrzymane wyniki z przygotowanym zestawem
-    QVERIFY( !isMatEqual(descriptors, correctDescriptors) );
-}
-void MatcherTest::robustMatchTest1          ()
-{
-    Mat img1 = imread("../../extraData/testImageSet/pen1.jpg", IMREAD_GRAYSCALE);
-    Mat img2 = imread("../../extraData/testImageSet/pen2.jpg", IMREAD_GRAYSCALE);
-    vector<KeyPoint> img1kp{}, img2kp{};
-    Mat img1desc{}, img2desc{};
-
+//--oblicz keypointy i deskryptory dla wczytanej pary zdjęć
+    vector<KeyPoint> img1kp, img2kp;
+    Mat img1desc, img2desc;
     Matcher matcher;
     matcher.computeKeyPoints(img1, img1kp);
     matcher.computeKeyPoints(img2, img2kp);
     matcher.computeDescriptors(img1, img1kp, img1desc);
     matcher.computeDescriptors(img2, img2kp, img2desc);
 
-    vector<DMatch> matches {};
+//--oblicz matches
+    vector<DMatch> matches;
     matcher.robustMatch(matches, img1desc, img2desc);
 
-    FileStorage fs("../../extraData/MatcherSetCorrectMatches", FileStorage::READ);
-    vector<DMatch> correctMatches{};
-    fs << "matches" <<correctMatches;
+//--wczytaj poprawny zestaw matches sporządzony dla ../../extraData/testImageSet/pen1.jpg
+    FileStorage fs("../../extraData/MatcherSetCorrectMatches.yml", FileStorage::READ);
+    vector<DMatch> correctMatches;
+    fs["matches"] >> correctMatches;
     fs.release();
 
-    QVERIFY( isMatchesEqual(matches, correctMatches) );
-}
-void MatcherTest::robustMatchTest2          ()
-{
-    Mat img1 = imread("../../extraData/testImageSet/pen2.jpg", IMREAD_GRAYSCALE);
-    Mat img2 = imread("../../extraData/testImageSet/badName.jpg", IMREAD_GRAYSCALE);
-    vector<KeyPoint> img1kp{}, img2kp{};
-    Mat img1desc{}, img2desc{};
-
-    Matcher matcher;
-    matcher.computeKeyPoints(img1, img1kp);
-    matcher.computeKeyPoints(img2, img2kp);
-    matcher.computeDescriptors(img1, img1kp, img1desc);
-    matcher.computeDescriptors(img2, img2kp, img2desc);
-
-    vector<DMatch> matches {};
-    matcher.robustMatch(matches, img1desc, img2desc);
-
-    FileStorage fs("../../extraData/MatcherSetCorrectMatches", FileStorage::READ);
-    vector<DMatch> correctMatches{};
-    fs << "matches" <<correctMatches;
-    fs.release();
-
-    QVERIFY( isMatchesEqual(matches, correctMatches) );
-}
-
-bool MatcherTest::isKeypointsEqual  (const KeyPoint &kp1, const KeyPoint &kp2)
-{
-    //--porównywanie floatów - hehe ktoby pomyślał taki psikus hehe
-
-    bool isEqualX { qAbs(kp1.pt.x - kp2.pt.x) < 0.01 };
-    bool isEqualY { qAbs(kp1.pt.y - kp2.pt.y ) < 0.01 };
-    bool isEqualSize { qAbs(kp1.size - kp2.size) < 0.01 };
-
-    return isEqualX && isEqualY && isEqualSize;
-}
-bool MatcherTest::isMatEqual        (const Mat &mat1, const Mat &mat2)
-{
-//--ta sama funkcja jest w CalibratorTest, po co pisać ją dwa razy ?!
-
-//--porównać można tylko Mat o tych samych rozmiarach
-    bool isEqualRows {mat1.rows == mat2.rows};
-    bool isEqualCols {mat1.cols == mat2.cols};
-
-    if( !isEqualCols || !isEqualRows )
-        return false;
-//--przekonwertuj do tych samych typów
-    Mat a;
-    mat1.convertTo(a, CV_32FC1);
-    Mat b;
-    mat2.convertTo(b, CV_32FC1);
-    Mat c;
-
-//--jeżeli odpowiadające sobie elementy są równe element w C.at(i,j) == 255, jeżeli nie jest = 0
-    compare(a, b, c, CMP_EQ);
-//--ilość elementów nie zerowych musi być równa ilości elementów macierzy
-    int rightCountNonZero = mat1.rows * mat1.cols;
-
-    return countNonZero(c) == rightCountNonZero;
-}
-bool MatcherTest::isMatchesEqual    (const vector<DMatch> &matches1, const vector<DMatch> &matches2)
-{
-    if(matches1.size() != matches2.size())
-        return false;
-
-    for(uint i = 0; i <matches1.size(); i++)
-    {
-        bool isEqualDistance { matches1.at(i).distance == matches2.at(i).distance };
-        bool isEqualQueryIdx { matches1.at(i).queryIdx == matches2.at(i).queryIdx };
-        bool isEqualTrainIdx { matches1.at(i).trainIdx == matches2.at(i).trainIdx };
-
-        if( !isEqualDistance || !isEqualQueryIdx || !isEqualTrainIdx)
-            return false;
-    }
-
-    return true;
+//--porównaj otrzymane matches z przygotowanym zestawem
+    return Commons::isMatchesEqual(matches, correctMatches);
 }
 
 QTEST_APPLESS_MAIN(MatcherTest)

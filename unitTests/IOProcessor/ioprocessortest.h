@@ -11,8 +11,10 @@ public:
     IOProcessorTest();
 
 private Q_SLOTS:
-    void loadImagesTest1();
-    void loadImagesTest2();
+    void loadImagesTests    ();
+
+private:
+    bool loadImagesTest     (QString dirPath);
 };
 
 #endif // IOPROCESSORTEST_H
